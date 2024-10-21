@@ -21,13 +21,13 @@ const ImageCarousel = () => {
     }, []);
 
     return (
-        <div className="relative overflow-hidden h-64">
+        <div className="relative overflow-hidden h-64 md:h-96">
             <div
                 className="flex transition-transform duration-700"
                 style={{ transform: `translateX(-${currentIndex * 100}%)` }}
             >
                 {images.map((image, index) => (
-                    <img key={index} src={image} alt={`Slide ${index + 1}`} className="h-full w-full object-cover" />
+                    <img key={index} src={image} alt={`Slide ${index + 1}`} className="h-full w-full object-contain" />
                 ))}
             </div>
         </div>
