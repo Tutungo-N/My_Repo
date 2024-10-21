@@ -40,14 +40,3 @@
 .read-the-docs {
   color: #888;
 }
-
-.carousel {
-  position: relative;
-  overflow: hidden;
-  height: 300px;
-}
-
-.carousel img {
-  width: 100%;
-  height: 100%;
-}
