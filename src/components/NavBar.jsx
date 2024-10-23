@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 
 const NavBar = () => {
@@ -34,39 +34,50 @@ const NavBar = () => {
                 </button>
 
                 {/* Nav Links for Desktop & Mobile */}
-                
-            <ul className={`md:flex space-x-6 items-center ${isOpen ? 'block' : 'hidden'} md:block ml-auto`}>
-                 <li>
-                    <Link to="/" className="text-white hover:text-gray-200">
-                        Home
-                    </Link>
-                </li>
-                <li>
-                    <Link to="/habit-management" className="text-white hover:text-gray-200">
-                        Habit Management
-                    </Link>
-                </li>
-                <li>
-                    <Link to="/login" className="text-white hover:text-gray-200">
-                        Login
-                    </Link>
-                </li>
-                <li>
-                    <Link to="/about" className="text-white hover:text-gray-200">
-                        About Me
-                    </Link>
-                </li>
-                <li>
-                    <Link to="/resources" className="text-white hover:text-gray-200">
-                        Resources
-                    </Link>
-                </li>
-            
-            </ul>
-         </div>
+                <ul className={`md:flex space-x-6 items-center ${isOpen ? 'block' : 'hidden'} md:block ml-auto`}>
+                    <li>
+                        <Link to="/" className="text-white hover:text-gray-200">
+                            Home
+                        </Link>
+                    </li>
+
+                    {/* Habit Management link with Tooltip */}
+                    <li className="relative group"> {/* Add group class here */}
+                        <Link to="/habit-management" className="text-white hover:text-gray-200">
+                            Habit Management
+                        </Link>
+                        {/* Tooltip */}
+                        <span className="absolute left-0 top-full mt-2 hidden group-hover:inline-block bg-gray-800 text-white text-xs px-2 py-1 rounded">
+                            Click here to create your habits
+                        </span>
+                    </li>
+
+                    <li>
+                        <Link to="/about" className="text-white hover:text-gray-200">
+                            About Me
+                        </Link>
+                    </li>
+                    <li>
+                        <Link to="/resources" className="text-white hover:text-gray-200">
+                            Resources
+                        </Link>
+                    </li>
+                    <li>
+                        <Link to="/login" className="text-white hover:text-gray-200">
+                            Login
+                        </Link>
+                    </li>
+                   
+                    <li>
+                        <Link to="/signup" className="text-white hover:text-gray-200">
+                             Sign Up
+                        </Link>
+                    </li>
+
+                </ul>
+            </div>
         </nav>
     );
 };
 
 export default NavBar;
-
