@@ -1,58 +1,62 @@
 import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import HabitList from '../components/HabitList';
 import AddHabitForm from '../components/AddHabitForm';
 
 const HabitManagement = () => {
     const [habits, setHabits] = useState([]);
 
-    // Load habits from localStorage when the component mounts
+    // Fetch habits from the backend API when the component mounts
     useEffect(() => {
-        const savedHabits = JSON.parse(localStorage.getItem('habits'));
-        if (savedHabits) {
-            setHabits(savedHabits);
-        }
+        fetchHabits();
     }, []);
 
-    // Save habits to localStorage whenever the habit list updates
-    useEffect(() => {
-        localStorage.setItem('habits', JSON.stringify(habits));
-    }, [habits]);
-
-    // Modify to accept the habit object passed from AddHabitForm
-    const addHabit = ({ name, date }) => {
-        const newHabit = {
-            name: name,   
-            date: date,
-            isGood: true, // Default to a "good" habit when added
-            isBeingEdited: false 
-        };
-        setHabits([...habits, newHabit]);
+    // Fetch habits from the backend
+    const fetchHabits = async () => {
+        try {
+            const response = await axios.get('http://localhost:5000/habits'); // Adjust URL as needed
+            setHabits(response.data); // Set fetched habits to state
+        } catch (error) {
+            console.error("Error fetching habits:", error);
+        }
     };
 
-    const deleteHabit = (index) => {
-        const updatedHabits = habits.filter((_, i) => i !== index);
-        setHabits(updatedHabits);
+    // Add habit with API call, then refetch data to sync
+    const addHabit = async (habitData) => {
+        try {
+            await axios.post('http://localhost:5000/habits', habitData);
+            fetchHabits(); // Refetch to get updated list
+        } catch (error) {
+            console.error("Error adding habit:", error);
+        }
     };
 
-    const editHabit = (index, newName) => {
-        const updatedHabits = habits.map((habit, i) => 
-            i === index ? { ...habit, name: newName, isBeingEdited: false } : habit
-        );
-        setHabits(updatedHabits);
+    const deleteHabit = async (id) => {
+        try {
+            await axios.delete(`http://localhost:5000/habits/${id}`);
+            fetchHabits(); // Refetch to get updated list after deletion
+        } catch (error) {
+            console.error("Error deleting habit:", error);
+        }
     };
 
-    const startEditingHabit = (index) => {
-        const updatedHabits = habits.map((habit, i) => 
-            i === index ? { ...habit, isBeingEdited: true } : habit
-        );
-        setHabits(updatedHabits);
+    const editHabit = async (id, newName) => {
+        try {
+            await axios.put(`http://localhost:5000/habits/${id}`, { name: newName });
+            fetchHabits(); // Refetch to get updated list after edit
+        } catch (error) {
+            console.error("Error editing habit:", error);
+        }
     };
 
-    const toggleHabitType = (index) => {
-        const updatedHabits = habits.map((habit, i) =>
-            i === index ? { ...habit, isGood: !habit.isGood } : habit
-        );
-        setHabits(updatedHabits);
+    const toggleHabitType = async (id) => {
+        try {
+            const habit = habits.find(h => h.id === id);
+            await axios.put(`http://localhost:5000/habits/${id}`, { isGood: !habit.isGood });
+            fetchHabits(); // Refetch to get updated list after toggle
+        } catch (error) {
+            console.error("Error toggling habit type:", error);
+        }
     };
 
     return (
@@ -66,7 +70,11 @@ const HabitManagement = () => {
                         onDeleteHabit={deleteHabit}
                         onEditHabit={editHabit}
                         onToggleHabitType={toggleHabitType}
-                        startEditingHabit={startEditingHabit}
+                        startEditingHabit={(index) => setHabits(prev => {
+                            const updated = [...prev];
+                            updated[index].isBeingEdited = true;
+                            return updated;
+                        })}
                     />
                     <AddHabitForm onAddHabit={addHabit} />
                 </main>
