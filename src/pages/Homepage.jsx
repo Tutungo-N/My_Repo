@@ -9,7 +9,7 @@ const HomePage = () => {
             <NavBar />
             
             {/* Main content section */}
-            <header className="text-center mt-8 md:mt-16">
+            <header className="text-center mt-1 md:mt-2">
                 {/* Responsive heading text */}
                 <h1 className="text-3xl md:text-5xl font-bold text-gray-800">
                     Welcome to TrackiBits
@@ -21,7 +21,7 @@ const HomePage = () => {
                 </p>
                 
                 {/* Responsive ImageCarousel */}
-                <div className="mt-8">
+                <div className="mt-4">
                     <ImageCarousel />
                 </div>
             </header>

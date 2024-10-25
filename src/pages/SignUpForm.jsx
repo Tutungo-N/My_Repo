@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
+import '../index.css';
 
 const SignupForm = () => {
     const [formData, setFormData] = useState({
-        name: '',
+        firstName: '',
+        lastName: '',
         email: '',
         password: '',
         confirmPassword: '',
@@ -10,7 +12,6 @@ const SignupForm = () => {
 
     const [errors, setErrors] = useState({});
 
-    // Handle input changes
     const handleChange = (e) => {
         setFormData({
             ...formData,
@@ -18,10 +19,10 @@ const SignupForm = () => {
         });
     };
 
-    // Validate the form
     const validate = () => {
         const newErrors = {};
-        if (!formData.name) newErrors.name = 'Name is required';
+        if (!formData.firstName) newErrors.firstName = 'First name is required';
+        if (!formData.lastName) newErrors.lastName = 'Last name is required';
         if (!formData.email) newErrors.email = 'Email is required';
         if (!formData.password) newErrors.password = 'Password is required';
         if (formData.password !== formData.confirmPassword)
@@ -29,7 +30,6 @@ const SignupForm = () => {
         return newErrors;
     };
 
-    // Handle form submission
     const handleSubmit = (e) => {
         e.preventDefault();
         const validationErrors = validate();
@@ -37,37 +37,46 @@ const SignupForm = () => {
             setErrors(validationErrors);
         } else {
             console.log('Form submitted successfully', formData);
-            // Proceed with registration logic
         }
     };
 
     return (
-        <div className="flex justify-center items-center h-screen">
-            <form
-                className="w-full max-w-md bg-blue shadow-md rounded px-8 pt-6 pb-8 mb-4"
-                onSubmit={handleSubmit}
-            >
-                <h2 className="text-center text-2xl font-bold mb-6">Sign Up</h2>
+        <div className="form-container">
+            <form className="form-wrapper" onSubmit={handleSubmit}>
+                <h2 className="form-heading">Sign Up</h2>
 
                 <div className="mb-4">
-                    <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="name">
-                        Name
+                    <label className="form-label" htmlFor="firstName">
+                        First Name
                     </label>
                     <input
-                        id="name"
-                        name="name"
+                        id="firstName"
+                        name="firstName"
                         type="text"
-                        value={formData.name}
+                        value={formData.firstName}
                         onChange={handleChange}
-                        className={`shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline ${
-                            errors.name ? 'border-red-500' : ''
-                        }`}
+                        className={`form-input ${errors.firstName ? 'form-input-error' : ''}`}
                     />
-                    {errors.name && <p className="text-red-500 text-xs italic">{errors.name}</p>}
+                    {errors.firstName && <p className="error-message">{errors.firstName}</p>}
                 </div>
 
                 <div className="mb-4">
-                    <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="email">
+                    <label className="form-label" htmlFor="lastName">
+                        Last Name
+                    </label>
+                    <input
+                        id="lastName"
+                        name="lastName"
+                        type="text"
+                        value={formData.lastName}
+                        onChange={handleChange}
+                        className={`form-input ${errors.lastName ? 'form-input-error' : ''}`}
+                    />
+                    {errors.lastName && <p className="error-message">{errors.lastName}</p>}
+                </div>
+
+                <div className="mb-4">
+                    <label className="form-label" htmlFor="email">
                         Email
                     </label>
                     <input
@@ -76,15 +85,13 @@ const SignupForm = () => {
                         type="email"
                         value={formData.email}
                         onChange={handleChange}
-                        className={`shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline ${
-                            errors.email ? 'border-red-500' : ''
-                        }`}
+                        className={`form-input ${errors.email ? 'form-input-error' : ''}`}
                     />
-                    {errors.email && <p className="text-red-500 text-xs italic">{errors.email}</p>}
+                    {errors.email && <p className="error-message">{errors.email}</p>}
                 </div>
 
                 <div className="mb-4">
-                    <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="password">
+                    <label className="form-label" htmlFor="password">
                         Password
                     </label>
                     <input
@@ -93,20 +100,13 @@ const SignupForm = () => {
                         type="password"
                         value={formData.password}
                         onChange={handleChange}
-                        className={`shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline ${
-                            errors.password ? 'border-red-500' : ''
-                        }`}
+                        className={`form-input ${errors.password ? 'form-input-error' : ''}`}
                     />
-                    {errors.password && (
-                        <p className="text-red-500 text-xs italic">{errors.password}</p>
-                    )}
+                    {errors.password && <p className="error-message">{errors.password}</p>}
                 </div>
 
                 <div className="mb-4">
-                    <label
-                        className="block text-gray-700 text-sm font-bold mb-2"
-                        htmlFor="confirmPassword"
-                    >
+                    <label className="form-label" htmlFor="confirmPassword">
                         Confirm Password
                     </label>
                     <input
@@ -115,20 +115,13 @@ const SignupForm = () => {
                         type="password"
                         value={formData.confirmPassword}
                         onChange={handleChange}
-                        className={`shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline ${
-                            errors.confirmPassword ? 'border-red-500' : ''
-                        }`}
+                        className={`form-input ${errors.confirmPassword ? 'form-input-error' : ''}`}
                     />
-                    {errors.confirmPassword && (
-                        <p className="text-red-500 text-xs italic">{errors.confirmPassword}</p>
-                    )}
+                    {errors.confirmPassword && <p className="error-message">{errors.confirmPassword}</p>}
                 </div>
 
                 <div className="flex items-center justify-between">
-                    <button
-                        type="submit"
-                        className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-                    >
+                    <button type="submit" className="submit-button">
                         Sign Up
                     </button>
                 </div>
@@ -138,4 +131,3 @@ const SignupForm = () => {
 };
 
 export default SignupForm;
-
