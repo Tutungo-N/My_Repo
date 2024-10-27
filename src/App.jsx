@@ -8,6 +8,7 @@ import SignupForm from './pages/SignUpForm';
 import LoginForm from './pages/LoginForm';
 import AboutMe from './pages/AboutMe';
 import Resources from './pages/Resources';
+import ProtectedRoute from './components/ProtectedRoute';
 
 function App() {
   return (
@@ -15,7 +16,7 @@ function App() {
       <Layout>
       <Routes>
         <Route path="/" element={<HomePage />} />
-        <Route path="/habit-management" element={<HabitManagement />} />
+        <Route path="/habit-management" element={<ProtectedRoute><HabitManagement /></ProtectedRoute>} />
         <Route path="/login" element={<LoginForm />} />
         <Route path="/signup" element={<SignupForm />} />  
         <Route path="/about" element={<AboutMe />} />
