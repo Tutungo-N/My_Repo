@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { setUser } from '../redux/store';
 
@@ -7,10 +8,11 @@ const LoginForm = () => {
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
     const dispatch = useDispatch();
-    
+    const location = useLocation(); // Get location to check for any state messages
+    const navigate = useNavigate();
+
     const handleSubmit = async (e) => {
         e.preventDefault();
-        console.log('Login credentials:', { email, password });
         try {
             const response = await fetch('http://localhost:5000/graphql', {
                 method: 'POST',
@@ -43,7 +45,7 @@ const LoginForm = () => {
                 localStorage.setItem('user', JSON.stringify(user));
                 
                 //Redirect to home page
-                window.location.href = '/';
+                navigate('/');
             } else {
                 setError('Invalid email or password');
             }
@@ -55,6 +57,11 @@ const LoginForm = () => {
 
     return (
         <div className="container mx-auto p-4">
+            {location.state?.successMessage && (
+                <div className="success-message mb-4">
+                    {location.state.successMessage}
+                </div>
+            )}
             <h1 className="text-2xl font-bold mb-4">Login</h1>
             {error && <p className="text-red-500">{error}</p>}
             <form onSubmit={handleSubmit}>
