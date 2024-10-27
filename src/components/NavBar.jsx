@@ -1,8 +1,30 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { useSelector, useDispatch } from 'react-redux';
+import { logout } from '../redux/store'; 
 
 const NavBar = () => {
     const [isOpen, setIsOpen] = useState(false);
+
+    // Access Redux state
+    const user = useSelector((state) => state.user.user);
+    const isLoggedIn = useSelector((state) => state.user.isLoggedIn);
+    const dispatch = useDispatch();
+
+    //Logout handler
+    const handleLogout = () => {
+        dispatch(logout());
+        localStorage.removeItem('user'); // Clear user data from local storage
+        window.location.href = '/'; // Redirect to home page
+    };
+
+    // Check if the user is already logged in using localStorage
+    useEffect(() => {
+        const storedUser = JSON.parse(localStorage.getItem('user'));
+        if (storedUser) {
+            // Optionally dispatch an action to update Redux state if you want 
+        }
+    }, []);
 
     return (
         <nav className="bg-blue-500 p-4 fixed top-0 left-0 w-full z-10 shadow-md">
@@ -62,19 +84,41 @@ const NavBar = () => {
                             Resources
                         </Link>
                     </li>
-                    <li>
-                        <Link to="/login" className="text-white hover:text-gray-200">
-                            Login
-                        </Link>
-                    </li>
-                   
-                    <li>
-                        <Link to="/signup" className="text-white hover:text-gray-200">
-                             Sign Up
-                        </Link>
-                    </li>
 
-                </ul>
+                    {/* Conditional rendering based on login status */}
+                    {isLoggedIn ? (
+                        <>
+                            <li>
+                                {/* Display user's name if logged in */}
+                                <span className="text-white">
+                                    Welcome, {user ?.firstName}!
+                                </span>
+                            </li>
+                            <li>
+                                <button
+                                    onClick={handleLogout}
+                                    className="text-white hover:text-gray-200"
+                                >
+                                    Logout
+                                </button>
+                            </li>
+                        </>
+                    ) : (
+                        <>
+                            <li>
+                                <Link to="/login" className="text-white hover:text-gray-200">
+                                    Login
+                                </Link>
+                            </li>
+                   
+                            <li>
+                                <Link to="/signup" className="text-white hover:text-gray-200">
+                                    Sign Up
+                                </Link>
+                            </li>
+                        </>
+                    )}
+                 </ul>
             </div>
         </nav>
     );
