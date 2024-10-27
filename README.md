@@ -1,8 +1,6 @@
-# React + Vite
+# TrackBits Project
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Brief Description:
+TrackiBits is a habit tracking application designed to help users create and manage their daily habits effectively. The platform enables users to track their progress, stay motivated, and accomplish their goals with ease. 
 
-Currently, two official plugins are available:
-
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+This project is still a work in progress. I am still making incremental changes each passing day.
