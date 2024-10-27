@@ -1,17 +1,62 @@
 import React, { useState } from 'react';
+import { useDispatch } from 'react-redux';
+import { setUser } from '../redux/store';
 
 const LoginForm = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-
-    const handleSubmit = (e) => {
+    const [error, setError] = useState('');
+    const dispatch = useDispatch();
+    
+    const handleSubmit = async (e) => {
         e.preventDefault();
         console.log('Login credentials:', { email, password });
+        try {
+            const response = await fetch('http://localhost:5000/graphql', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    query: `
+                        query {
+                            getUser(email: "${email}", password: "${password}") {
+                                id
+                                firstName
+                                lastName
+                                email
+                            }    
+                        }
+                    `,
+                 }),
+            });
+
+            const data = await response.json();
+
+            if (data.data.getUser) {
+                const user = data.data.getUser;
+                
+                // Store user data in Redux state
+                dispatch(setUser(user));
+
+                //Save user info to local storage or store session
+                localStorage.setItem('user', JSON.stringify(user));
+                
+                //Redirect to home page
+                window.location.href = '/';
+            } else {
+                setError('Invalid email or password');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            setError('An error occurred. Please try again.');
+        }   
     };
 
     return (
         <div className="container mx-auto p-4">
             <h1 className="text-2xl font-bold mb-4">Login</h1>
+            {error && <p className="text-red-500">{error}</p>}
             <form onSubmit={handleSubmit}>
                 <div className="mb-4">
                     <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="email">
@@ -46,4 +91,3 @@ const LoginForm = () => {
 };
 
 export default LoginForm;
-
