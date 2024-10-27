@@ -1,4 +1,4 @@
-# TrackBits Project
+# TrackiBits Project
 
 Brief Description:
 TrackiBits is a habit tracking application designed to help users create and manage their daily habits effectively. The platform enables users to track their progress, stay motivated, and accomplish their goals with ease. 
