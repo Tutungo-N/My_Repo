@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import '../index.css';
 
 const SignupForm = () => {
@@ -11,6 +12,7 @@ const SignupForm = () => {
     });
 
     const [errors, setErrors] = useState({});
+    const navigate = useNavigate();
 
     const handleChange = (e) => {
         setFormData({
@@ -30,15 +32,42 @@ const SignupForm = () => {
         return newErrors;
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
         const validationErrors = validate();
         if (Object.keys(validationErrors).length > 0) {
             setErrors(validationErrors);
         } else {
-            console.log('Form submitted successfully', formData);
+            try {
+                const response = await fetch('http://localhost:5000/graphql', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        query: `
+                            mutation {
+                                createUser(
+                                    firstName: "${formData.firstName}",
+                                    lastName: "${formData.lastName}",
+                                    email: "${formData.email}",
+                                    password: "${formData.password}"
+                                )
+                            }
+                        `,
+                    }),
+                });
+                const data = await response.json();
+                if (data.data.createUser === 'User created successfully') {
+                    // Redirect to login page
+                    navigate('/login');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+            }
         }
     };
+    
 
     return (
         <div className="form-container">
