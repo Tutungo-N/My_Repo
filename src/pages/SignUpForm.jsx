@@ -59,8 +59,12 @@ const SignupForm = () => {
                 });
                 const data = await response.json();
                 if (data.data.createUser === 'User created successfully') {
-                    // Redirect to login page
-                    navigate('/login');
+                    // Redirect to login page with success message
+                    navigate('/login', {
+                        state: {
+                            successMessage: `Hello ${formData.firstName}, your account was created successfully. Please log in to continue.`
+                        }
+                    });
                 }
             } catch (error) {
                 console.error('Error:', error);
