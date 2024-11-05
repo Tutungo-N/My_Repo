@@ -6,53 +6,97 @@ import AddHabitForm from '../components/AddHabitForm';
 const HabitManagement = () => {
     const [habits, setHabits] = useState([]);
 
-    // Fetch habits from the backend API when the component mounts
+    // Fetch habits from the GraphQL API when the component mounts
     useEffect(() => {
         fetchHabits();
     }, []);
 
-    // Fetch habits from the backend
+    // Fetch habits using GraphQL
     const fetchHabits = async () => {
         try {
-            const response = await axios.get('http://localhost:5000/habits'); // Adjust URL as needed
-            setHabits(response.data); // Set fetched habits to state
+            const response = await axios.post('http://localhost:5000/graphql', {
+                query: `
+                    query {
+                        getHabits {
+                            id
+                            name
+                            date
+                            isGood    
+                        }
+                    }
+                `
+            }); 
+            console.log('Fetched Habits:', response.data.data.getHabits);
+            setHabits(response.data.data.getHabits); // Set fetched habits to state
         } catch (error) {
             console.error("Error fetching habits:", error);
         }
     };
 
-    // Add habit with API call, then refetch data to sync
+    // Add habit with GraphQL mutation
     const addHabit = async (habitData) => {
         try {
-            await axios.post('http://localhost:5000/habits', habitData);
+            await axios.post('http://localhost:5000/graphql', {
+                query: `
+                    mutation {
+                        addHabit(name: "${habitData.name}", date: "${habitData.date}", isGood: ${habitData.isGood || true}) {
+                            id 
+                            name
+                            date
+                            isGood
+                        }
+                    }
+                `
+            });
             fetchHabits(); // Refetch to get updated list
         } catch (error) {
             console.error("Error adding habit:", error);
         }
     };
 
+    // Delete habit using GraphQL mutation
     const deleteHabit = async (id) => {
         try {
-            await axios.delete(`http://localhost:5000/habits/${id}`);
+            await axios.post('http://localhost:5000/graphql', {
+                query: `
+                    mutation {
+                        deleteHabit(id: ${id})
+                    }
+                `
+            });
             fetchHabits(); // Refetch to get updated list after deletion
         } catch (error) {
             console.error("Error deleting habit:", error);
         }
     };
 
-    const editHabit = async (id, newName) => {
+    // Edit habit using GraphQL mutation
+    const editHabit = async (id, newName, isGood) => {
         try {
-            await axios.put(`http://localhost:5000/habits/${id}`, { name: newName });
-            fetchHabits(); // Refetch to get updated list after edit
+            await axios.post('http://localhost:5000/graphql', {
+                query: `
+                    mutation {
+                        updateHabit(id: ${id}, name: "${newName}", isGood: ${isGood})   
+                    }
+                `
+             });
+            setHabits(prev => prev.map(habit => habit.id === id ? {...habit, isBeingEdited: false} : habit)); //Reset editing state
+             fetchHabits(); // Refetch to get updated list after edit
         } catch (error) {
             console.error("Error editing habit:", error);
         }
     };
 
-    const toggleHabitType = async (id) => {
+    const toggleHabitType = async (id, isGood) => {
         try {
-            const habit = habits.find(h => h.id === id);
-            await axios.put(`http://localhost:5000/habits/${id}`, { isGood: !habit.isGood });
+            //const habit = habits.find(h => h.id === id);
+            await axios.post('http://localhost:5000/graphql', { 
+                query: `
+                    mutation {
+                        updateHabit(id: ${id}, isGood: ${isGood})
+                    }
+                `
+             });
             fetchHabits(); // Refetch to get updated list after toggle
         } catch (error) {
             console.error("Error toggling habit type:", error);
