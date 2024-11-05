@@ -36,12 +36,24 @@ const schema = buildSchema(`
     email: String
     }
     
+    type Habit {
+    id: ID!
+    name: String
+    date: String
+    isGood: Boolean
+    }
+
     type Query {
         getUser(email: String!, password: String!): User
+        getHabits: [Habit]
+        getHabit(id: ID!): Habit
     }
     
     type Mutation {
         createUser(firstName: String!, lastName: String!, email: String!, password: String!): String
+        addHabit(name: String!, date: String!, isGood: Boolean): Habit
+        updateHabit(id: ID!, name: String, isGood: Boolean): String
+        deleteHabit(id: ID!): String
     }
 `);
 
@@ -75,6 +87,77 @@ const root = {
                     reject(new Error('Database error'));
                 } else {
                     resolve('User created successfully');
+                }
+            });
+        });
+    },
+
+
+    // Resolvers for habit management
+    getHabits: () => {
+        return new Promise((resolve, reject) => {
+            const query = 'SELECT * FROM myhabits';
+            db.query(query, (err, results) => {
+                if (err) {
+                    reject(new Error('Error Fetching habits'));
+                } else {
+                    //Return the habits with the correct field names
+                    resolve(results.map(habit =>({
+                        id: habit.id,
+                        name: habit.name,
+                        date: habit.date ? new Date(habit.date).toISOString().split('T')[0]:"", //Format date to YYYY-MM-DD
+                        isGood: !!habit.isGood
+                    })));
+                }
+            });
+        });
+    },
+    getHabit: ({ id }) => {
+        return new Promise((resolve, reject) =>{
+            const query = 'SELECT * FROM myhabits WHERE id = ?';
+            db.query(query, [id], (err, results) =>{
+                if (err) {
+                    reject(new Error('Error fetching habit'));
+                } else if (results.length > 0){
+                    resolve(results[0]);
+                } else {
+                    reject(new Error('Habit not found'));
+                }
+            });
+        });
+    },
+    addHabit: ({ name, date, isGood }) => {
+        return new Promise((resolve, reject) => {
+            const query = 'INSERT INTO myhabits (name, date, isGood) VALUES (?, ?, ?)';
+            db.query(query, [name, date, isGood || true], (err, result) => {
+                if (err) {
+                    reject(new Error('Error adding habit'));
+                } else {
+                    resolve({ id: result.insertId, name, date, isGood });
+                }
+            });
+        });
+    },
+    updateHabit: ({ id, name, isGood }) => {
+        return new Promise((resolve, reject) => {
+            const query = 'UPDATE myhabits SET name = ?, isGood = ? WHERE id = ?';
+            db.query(query, [name, isGood, id], (err) => {
+                if (err) {
+                    reject(new Error('Error updating habit'));
+                } else {
+                    resolve('Habit updated successfully');
+                }
+            });
+        });
+    },
+    deleteHabit: ({ id }) => {
+        return new Promise((resolve, reject) => {
+            const query = 'DELETE FROM myhabits WHERE id = ?';
+            db.query(query, [id], (err) => {
+                if (err) {
+                    reject(new Error('Error deleting habit'));
+                } else {
+                    resolve('Habit deleted successfully');
                 }
             });
         });
